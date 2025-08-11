@@ -1,0 +1,1176 @@
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Omni-Effects: Unified and Spatially-Controllable Visual Effects Generation</title>
+  <meta name="description" content="Omni-Effects: Unified and Spatially-Controllable Visual Effects Generation">
+  <meta name="keywords" content="Visual Effects, Dataset, Video Generation, Image-to-Video, Stable Diffusion, AIGC, Image Generation, AMAP">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000000">
+  <link rel="stylesheet" href="./assets/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css">
+    <style>
+        @font-face {
+            font-family: 'Roboto';
+            font-style: normal;
+            font-stretch: 100%;
+            font-display: block;
+            font-weight: 300 700;
+            src: url('./assets/roboto.woff2') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        @font-face {
+          font-family: 'DancingScript';
+          src: url('./assets/DancingScript-Bold.ttf') format('truetype');
+        }
+
+        @font-face {
+          font-family: 'Caveat';
+          src: url('./assets/Caveat-Medium.ttf') format('truetype');
+        }
+
+        @font-face {
+          font-family: 'Alegreya';
+          src: url('./assets/Alegreya-Regular.ttf') format('truetype');
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        video {
+            background-color: #000000;
+            aspect-ratio: 16 / 9;
+        }
+
+        section.portrait video {
+            background-color: #000000;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+        }
+
+        section.multi_ip video {
+            background-color: #000000;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+        }
+
+        section.portrait .prompt-wrap.full-screen-wrap video {
+            object-fit: cover;
+        }
+
+        section.portrait .flex {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+
+        section.portrait2 .flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+
+        section.portrait .flex > div {
+            flex: 0 0 calc((100% - 5 * 10px) / 6);
+        }
+        section.portrait2 .flex > div {
+            flex: 0 0 calc((100% - 1 * 10px) / 2);
+        }
+
+        section.portrait .prompt {
+            font-size: 10px;
+        }
+        section.portrait2 .prompt {
+            font-size: 12px;
+        }
+
+        section.portrait .flex-row {
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        section.portrait2 .flex-row {
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            section.portrait .flex > div {
+                flex: 0 0 calc((100% - 1 * 10px) / 2);
+            }
+        }
+
+        @media (max-width: 768px) {
+            section.portrait2 .flex > div {
+                flex: 0 0 calc((100% - 0 * 10px) / 1);
+            }
+        }
+
+        /* Ensure prompt adjusts for portrait mode */
+        .portrait .prompt {
+            position: absolute;  /* Allow positioning relative to the container */
+            bottom: 5%;          /* Adjust this to control the vertical placement of the prompt */
+            left: 50%;           /* Center horizontally */
+            transform: translateX(-50%); /* Offset by 50% of its width to truly center */
+            max-width: 80%;
+            text-align: center;  /* Center the text inside the prompt */
+            color: white;        /* Optional, if you want the text to stand out */
+            font-size: 1.2em;    /* Optional, adjust the text size */
+        }
+
+        .portrait2 .prompt{
+            position: absolute;  /* Allow positioning relative to the container */
+            bottom: 5%;          /* Adjust this to control the vertical placement of the prompt */
+            left: 50%;           /* Center horizontally */
+            transform: translateX(-50%); /* Offset by 50% of its width to truly center */
+            max-width: 80%;
+            text-align: center;  /* Center the text inside the prompt */
+            color: white;        /* Optional, if you want the text to stand out */
+            font-size: 1.2em;    /* Optional, adjust the text size */
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: "Roboto", sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+
+        #intro {
+            padding: 100px 0 80px 0;
+            justify-content: center; /* Center content vertically */
+            text-align: center; /* Center text alignment */
+            background-image: url('./assets/image/background/blank-1868502_1280.jpg');
+            background-size: cover; /* Cover the entire container */
+            background-position: center; /* Center the background image */
+            color: #090808; /* Ensure text color is readable */
+        }
+
+        #intro h1 {
+            font-size: 90px;
+            font-weight: 300;
+            margin: 20px 0;
+        } 
+
+        #intro h2 {
+            margin: 20px 0 40px 0;
+            font-weight: 300;
+            color: #090808
+        }
+
+        #intro h2 strong {
+            color: #090808;
+        }
+
+        .authors {
+            font-size: 16px;
+            font-weight: 500;
+            color: #090808;
+            text-align: center;
+            margin-bottom: 25px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .author-block {
+            display: inline-block;
+            margin: 0 10px 0 10px;
+        }
+
+        .author-block a {
+            color: #090808;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .author-block a:hover {
+            color: #090808;
+        }
+
+        .author-affiliation {
+            font-size: 16px;
+            color: #090808;
+            text-align: center;
+            margin-bottom: 60px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .author-affiliation .author-block {
+            display: inline-block;
+            margin: 0 15px;
+        }
+
+        section {
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        .content {
+            padding: 0 10%;
+        }
+
+        .button {
+            background-color: #ccc;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: background-color 0.5s;
+            text-decoration: none;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .button:hover {
+            background-color: #fff;
+        }
+
+        .bibtex-section {
+            background-color: #111;
+            padding: 40px 10%;
+            text-align: center;
+            margin-top: 60px;
+            color: #ccc;
+        }
+
+        .bibtex-section h3 {
+            font-size: 24px;
+            font-weight: 400;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .bibtex-code {
+            background-color: #222;
+            color: #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+            display: inline-block;
+            font-family: monospace;
+            max-width: 800px;
+            overflow-x: auto;
+        }
+
+        section {
+            margin-top: 100px;
+        }
+        section:first-of-type {
+            margin-top: 0;
+        }
+
+        .title {
+            background-color: #000;
+            position: sticky;
+            top: 0;
+            padding: 20px 10%;
+            font-size: 20px;
+            font-weight: 600;
+            z-index: 1000;
+            min-height: 60px;
+            box-sizing: border-box;
+        }
+
+        .description {
+            padding: 0 10% 20px 10%;
+            color: #999;
+            line-height: 25px;
+            font-weight: 300;
+        }
+
+        .highlight {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .flex-row {
+            display: flex;
+            column-gap: 5px;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            padding: 0 5px 5px 5px;
+            
+        }
+
+        .flex-row > div {
+            flex-grow: 1;
+            flex-basis: 0;
+            position: relative;
+        }
+
+        .flex > div {
+            width: calc(100% / 3 - 5px * 2 / 3);
+            margin-top: 2.5px;
+            margin-bottom: 2.5px;
+            position: relative;
+        }
+
+        .flex {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 0 5px;
+        }
+
+        .prompt-wrap {
+            position: relative;
+        }
+
+        .flex-2 {
+            justify-content: center;
+            column-gap: 5px;
+        }
+        .flex-2 > div {
+            width: calc(100% / 2 - 5px / 2);
+            min-width: calc(100% / 3 - 5px * 2 / 3);
+            max-width: calc(100vh - 200px);
+        }
+
+        .flex-3 > div {
+            width: calc(100% / 4 - 5px * 2 / 4);
+            margin-top: 2.5px;
+            margin-bottom: 2.5px;
+            position: relative;
+        }
+
+        .flex-3 {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 0 5px;
+        }
+
+        .flex-4 {
+            justify-content: center;
+            column-gap: 5px;
+        }
+        .flex-4 > div {
+            width: calc(100% / 1 - 5px / 1);
+            /* min-width: calc(100% / 3 - 5px * 2 / 3);
+            max-width: calc(100vh - 200px); */
+        }
+
+        video, img {
+            width: 100%;
+        }
+
+        .loading-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .loading-text {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .loading-icon {
+            font-size: 48px;
+        }
+
+        .prompt {
+            max-width: calc(100% - 20px);
+            position: absolute;
+            background: rgba(0,0,0,0.5);
+            color: rgba(255,255,255,0.9);
+            font-size: 10px;
+            backdrop-filter: blur(10px);
+            bottom: 10px;
+            left: 10px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+            box-sizing: border-box;
+        }
+
+        .flex-very-compact .full-screen-button {
+            width: 100%;
+            height: 100%;
+            top: 0;
+            right: 0;
+            border-radius: 0;
+        }
+
+        .chinese {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: bold;
+            color: #d18585;
+            font-size: 1.1em;
+        }
+
+        @media (hover: hover) {
+            .prompt-wrap:hover .prompt,
+            .full-screen-wrap:hover .full-screen-button {
+                opacity: 1;
+                pointer-events: all;
+            }
+            #contributors a:hover {
+                background-color: #222;
+            }
+        }
+
+        @media (hover: none) {
+            #contributors a {
+                pointer-events: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .flex-dynamic > div {
+                width: calc(100% / 2 - 5px / 2);
+            }
+        }
+
+        @media (max-width: 640px) {
+            #intro h1 {
+                font-size: 50px;
+            }
+            #intro h2 {
+                font-size: 20px;
+            }
+            .ruler {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 512px) {
+            .flex-dynamic > div,
+            .flex-dynamic-1 > div {
+                width: 100%;
+            }
+
+            .content {
+                padding: 0 12px;
+            }
+
+            .description {
+                padding: 0 12px 20px 12px;
+            }
+
+            .title {
+                padding: 20px 12px;
+            }
+
+            .ruler-tight {
+                font-size: 6px;
+                column-gap: 0;
+            }
+
+            .title-long {
+                font-size: 16px;
+            }
+
+        }
+
+        .margin-top {
+            margin-top: 50px;
+        }
+
+        .ruler {
+            text-align: center;
+            position: sticky;
+            top: 60px;
+            z-index: 999;
+            background-color: #000;
+            color: #999;
+            padding: 5px 0;
+        }
+
+        .ruler > div {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .selected {
+            box-shadow: 0 0 0 5px #fff;
+        }
+
+        #title-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        #title-icon {
+          height: 8em;
+          width: auto;
+          margin-right: 0px;
+          vertical-align: middle;
+        }
+
+        .title-art {
+          font-family: 'DancingScript', sans-serif;
+        }
+
+        .title-art2 {
+          font-family: 'Caveat', sans-serif;
+        }
+
+        .title-art3 {
+          font-family: 'Alegreya', sans-serif;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: rgb(15, 14, 14);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        #video-wrapper {
+          border-radius: 50px;
+          max-width: 720px;
+          padding-bottom: 40%; 
+          margin: 0 auto;
+          background: #000000;
+        }
+
+        .ethics-section {
+            padding: 100px 10%;
+            text-align: center;
+            margin-top: 60px;
+            color: #ccc;
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        .acknowledgements-section {
+            padding: 100px 10%;
+            text-align: center;
+            margin-top: 60px;
+            color: #ccc;
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+    </style>
+</head>
+<body>
+    <body>
+        <!-- 首页大图 intro -->
+        <section id="intro">
+            <div class="content">
+                <div id="title-container">
+                    <img id="title-icon" src="./assets/image/logo/logo4.png" alt="Icon">
+                    <h1 class="title-art"><strong>Omni-Effects</strong></h1>
+                </div>
+                <h2 class="title-art2">Unified and Spatially-Controllable Visual Effects Generation</h2>
+                <div class="authors">
+                    <span class="author-block">Fangyuan Mao<sup>*</sup></span>
+                    <span class="author-block">Aiming Hao<sup>*</sup></span>
+                    <span class="author-block">Jintao Chen<sup></sup></span>
+                    <span class="author-block">Dongxia Liu<sup></sup></span>
+                    <span class="author-block">Xiaokun Feng<sup></sup></span>
+                    <span class="author-block">Jiashu Zhu<sup></sup></span>
+                    <span class="author-block">Meiqi Wu<sup></sup></span>
+                    <span class="author-block">Chubin Chen<sup></sup></span>
+                    <span class="author-block">Jiahong Wu<sup>^ &dagger;</sup></span>
+                    <span class="author-block">Xiangxiang Chu<sup>&dagger;</sup></span>
+                </div>
+                <!-- Added the affiliations section -->
+                <div class="author-affiliation">
+                    <p><span><sup>*</sup>Equal contribution,<sup>^</sup>Corresponding author,<sup> &dagger;</sup>Project lead</span></p>
+                    <p><span>Machine Learning Team, AMAP</span></p>
+                </div>
+
+                <a class="button" href="" target="_blank">Research Paper</a>
+                <a class="button" href="https://github.com/AMAP-ML/Omni-Effects" target="_blank">GitHub</a>
+                <a class="button" href="https://huggingface.co/GD-ML/Omni-Effects" target="_blank">Omni-Effects</a>
+                <a class="button" href="https://huggingface.co/datasets/GD-ML/Omni-VFX" target="_blank">Omni-VFX</a>
+                <div style="margin-top:28px;">
+                  <!-- <img src="assets/omnieffects/images/teaser.jpg" style="max-width:90%;border-radius:12px;box-shadow:0 0 10px #000"> -->
+                  <!-- <div style="margin:10px auto;max-width:900px;color:#fff"> <b>Capabilities for Diverse Customized Visual Effects.</b> -->
+                  <!-- <b><i>Omni-Effects</i></b> supports both (a) single-VFX and (b) multi-VFX generation through pure prompt-guided generation. Integrated with the <b>Spatial-Aware Prompt</b>, <b><i>Omni-Effects</i></b> enables (c) precise spatial VFX control and (d) intricate object-based visual effects with targeted environmental transformations. </div> -->
+                </div>
+            </div>
+        </section>
+
+        <!-- <section>
+            <div class="container text-center" style="margin-top: 50px; text-align: center;">
+                <p class="title-art3" style="font-size: 1.6em;">Single VFX</p>
+                <div class="flex-3 flex-dynamic" style="margin-top:20px;">
+                  <div style="width:45%;max-width:600px;">
+                    <video controls muted loop playsinline>
+                      <source src="assets/demo/videos/melt-0.mp4" type="video/mp4">
+                    </video>
+                  </div>
+                  <div style="width:45%;max-width:600px;">
+                    <video controls muted loop playsinline>
+                      <source src="assets/demo/videos/melt-0.mp4" type="video/mp4">
+                    </video>
+                  </div>
+                  <div style="width:45%;max-width:600px;">
+                    <video controls muted loop playsinline>
+                      <source src="assets/demo/videos/melt-0.mp4" type="video/mp4">
+                    </video>
+                  </div>
+                </div>
+              </div>
+        </section> -->
+
+
+
+    <div class="container text-center" style="margin-top: 50px; text-align: center;">
+      <p class="title-art3" style="font-size: 1.6em;"> VFX Created from Omni-Effects</p>
+      <!-- <p class="description" style="font-size: 1.0em;"> Turn on the sound for a better viewing experience</p> -->
+    </div>
+    
+
+    <div id="carouselExampleCaptions" class="carousel slide show-neighbors" data-ride="carousel" data-interval="false">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="item__third">
+            <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                  <source src="assets/demo/videos/multi_VFX_cases/prompt-guided/gaode_Fluffify_winter.mp4" type="video/mp4">
+                </video>              
+              <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
+                    "Fluffify it, Change the setting to a winter scene."
+              </div>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+            <div class="item__third">
+              <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                <source src="assets/demo/videos/single_VFX_cases/paris/pexels-adrienn-638530-1460145_winter.mp4" type="video/mp4">
+              </video>              
+            <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
+                "Change the setting to a winter scene."
+            </div>
+            </div>
+        </div>
+
+        <div class="carousel-item">
+            <div class="item__third">
+              <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case1/Melt_it_Explode_it_Levitate_it_pexels-mikhail-nilov-7828316_16fps.mp4" type="video/mp4">
+              </video>              
+            <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
+                "Melt ball; Explode vase; Levitate pyramid."
+            </div>
+            </div>
+        </div>
+        
+        <div class="carousel-item">
+            <div class="item__third">
+              <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                  <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case3/Levitate_it_Melt_it_anime.mp4" type="video/mp4">
+                </video>              
+              <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
+                    "Levitate girl; Melt toy bear; Turn it into anime style."
+              </div>
+            </div>
+        </div>
+
+        <div class="carousel-item">
+            <div class="item__third">
+                <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                    <source src="assets/demo/videos/multi_VFX_cases/prompt-guided/pexels-stockphotoartist-1034859_spring_flying.mp4" type="video/mp4">
+                  </video>              
+                <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
+                    "Change the setting to spring with blooming flowers; Make it fly"
+                </div>
+              </div>           
+        </div>
+        
+        
+        
+      </div>
+
+      <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true" style="background-image: url('./assets/arrow-right.svg'); width: 50px; height: 50px; transform: rotate(180deg);"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true" style="background-image: url('./assets/arrow-right.svg'); width: 50px; height: 50px;"></span>
+        <span class="sr-only">Next</span>
+      </a>
+
+    </div>
+
+
+    <section id="video">
+        <div class="title" style="font-family: 'Alegreya'; font-size: 1.6em;">
+          Prompt-guided VFX
+        </div>
+        <div class="description">
+            <em><strong>Omni-Effects</strong></em> generates single-VFX results with fidelity and reliability based on the prompt-guided.
+        </div>
+        
+        <div class="flex flex-dynamic">
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <!-- <div class="loading-placeholder">
+                    <div class="loading-text">Loading...</div>
+                    <div class="loading-icon">&#9749</div>
+                </div> -->
+                <!-- <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                    <source src="assets/demo/videos/melt-0.mp4" type="video/mp4">
+                </video>  -->
+                <!-- <img src="./assets/image/editing/1_re.webp" style="display: none;" onload="this.style.display='block'; this.previousElementSibling.style.display='none';"></img> -->
+                <!-- <div class="prompt">A man wearing black sunglasses and a dark brown long windbreaker turns his back to the camera. The wind blows the hem of his clothes, creating a dynamic movement. The camera focuses on his weathered profile, capturing the lines and textures of his face. He stands on a modern city street in Ma Long, which is bustling with traffic and tall skyscrapers.</div> -->
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/single_VFX_cases/paris/pexels-adrienn-638530-1460145_spring.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                        "Change the setting to spring with blooming flowers."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+                  
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/single_VFX_cases/paris/pexels-adrienn-638530-1460145_firworks.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Add fireworks."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/single_VFX_cases/paris/pexels-adrienn-638530-1460145_autumn.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Change the setting to autumn with falling leaves."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>    
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/single_VFX_cases/others/hulk_person1.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Turn characters into hulk."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/single_VFX_cases/others/super_saiyan_person1.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Super saiyan transformation, real life style."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/single_VFX_cases/others/metallic_robotic_person1.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Character's face transforms into a metallic, robotic visage."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/single_VFX_cases/artist/anime_0.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Turn it into anime style."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+                </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/single_VFX_cases/artist/impasto_person0.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Turn it into impasto style."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+                </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/single_VFX_cases/artist/mosaic_0.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Turn it into mosaic style."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+                </div>
+        </div>
+    </section>
+
+
+    <section id="video">
+      <div class="title" style="font-family: 'Alegreya'; font-size: 1.6em;">
+        Prompt-guided Multi-VFX
+      </div>
+
+      <div class="description">
+        <em><strong>Omni-Effects</strong></em> generates multi-VFX results with fidelity and reliability based on the prompt-guided.
+      </div>
+
+      <div class="flex flex-dynamic">
+
+          <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+            <div style="max-width:1000px; margin:0 auto;">
+                <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                  <source src="assets/demo/videos/multi_VFX_cases/prompt-guided/transformer_winter.mp4" type="video/mp4">
+                </video>
+                <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Transform into transformers, Change the setting to a winter scene."
+                </div>
+                <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+              </div>
+          </div>
+          <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+            <div style="max-width:1000px; margin:0 auto;">
+                <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                  <source src="assets/demo/videos/multi_VFX_cases/prompt-guided/pexels-moose-photos-170195-1036627_electrify_fireworks.mp4" type="video/mp4">
+                </video>
+                <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "The character's eyes begin to glow blue, and a bright blue electric effect emanates from his body, Add fireworks."
+                </div>
+                <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+              </div>
+          </div>
+          <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+            <div style="max-width:1000px; margin:0 auto;">
+                <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                  <source src="assets/demo/videos/multi_VFX_cases/prompt-guided/pexels-brett-sayles-1073083_puppy_cartoon.mp4" type="video/mp4">
+                </video>
+                <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                 <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Character is surrounded by puppies, Turn it into 3D cartoon style."
+                </div>
+            </div>
+            
+      </div>
+    </section>
+
+    <section id="video">
+        <div class="title" style="font-family: 'Alegreya'; font-size: 1.6em;">
+          SPA-guided VFX
+        </div>
+        <div class="description">
+            <em><strong>Omni-Effects</strong></em> generates single-VFX results with fidelity and reliability based on the SPA-guided.
+        </div>
+        
+        <div class="flex flex-dynamic">
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <!-- <div class="loading-placeholder">
+                    <div class="loading-text">Loading...</div>
+                    <div class="loading-icon">&#9749</div>
+                </div> -->
+                <!-- <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                    <source src="assets/demo/videos/melt-0.mp4" type="video/mp4">
+                </video>  -->
+                <!-- <img src="./assets/image/editing/1_re.webp" style="display: none;" onload="this.style.display='block'; this.previousElementSibling.style.display='none';"></img> -->
+                <!-- <div class="prompt">A man wearing black sunglasses and a dark brown long windbreaker turns his back to the camera. The wind blows the hem of his clothes, creating a dynamic movement. The camera focuses on his weathered profile, capturing the lines and textures of his face. He stands on a modern city street in Ma Long, which is bustling with traffic and tall skyscrapers.</div> -->
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/controllable_single_VFX_cases/levitate/pexels-barnabas-davoti-31615494-14084426-16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Levitate left dog."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/controllable_single_VFX_cases/levitate/pexels-cottonbro-6769369_16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Levitate right woman."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/controllable_single_VFX_cases/levitate/pexels-dagmara-dombrovska-22732579-19135400_16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Levitate right apple."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>    
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/controllable_single_VFX_cases/melt/pexels-ekaterina-bolovtsova-6312184-16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Melt left cup."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/controllable_single_VFX_cases/melt/pexels-zyla-rohly-703130857-33007018_16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Melt right bottle."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/controllable_single_VFX_cases/melt/pexels-kindred-motorworks-356120693-14286286-16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Melt right car."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/controllable_single_VFX_cases/explode/pexels-ron-lach-8777642_16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Explode right cup."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/controllable_single_VFX_cases/explode/pexels-erenalkis-33004189_16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Explode left coconut."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/controllable_single_VFX_cases/explode/pexels-eng_hasanain-khaleel_ib-2153621871-32993300-16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Explode left lens."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="video">
+        <div class="title" style="font-family: 'Alegreya'; font-size: 1.6em;">
+          SPA-guided Multi-VFX
+        </div>
+        <div class="description">
+            <em><strong>Omni-Effects</strong></em> generates multi-VFX results with fidelity and reliability based on the SPA-guided.
+        </div>
+        
+        <div class="flex flex-dynamic">
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <!-- <div class="loading-placeholder">
+                    <div class="loading-text">Loading...</div>
+                    <div class="loading-icon">&#9749</div>
+                </div> -->
+                <!-- <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                    <source src="assets/demo/videos/melt-0.mp4" type="video/mp4">
+                </video>  -->
+                <!-- <img src="./assets/image/editing/1_re.webp" style="display: none;" onload="this.style.display='block'; this.previousElementSibling.style.display='none';"></img> -->
+                <!-- <div class="prompt">A man wearing black sunglasses and a dark brown long windbreaker turns his back to the camera. The wind blows the hem of his clothes, creating a dynamic movement. The camera focuses on his weathered profile, capturing the lines and textures of his face. He stands on a modern city street in Ma Long, which is bustling with traffic and tall skyscrapers.</div> -->
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case6/pexels-charles-kettor-268979-1077785-16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Melt left car; Levitate right car."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+                  
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case2/Levitate_it_Melt_it_pexels-cottonbro-4056535_16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Levitate left woman; Melt right dog."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case4/pexels-cup-of-couple-7303800_16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Melt left chair; Levitate right chair."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>    
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case5/pexels-kunal-lakhotia-781256899-32988531_16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Explode left ring; Melt right ring."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case7/pexels-ektra-21620905-16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Explode left car; Melt right car."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+            <div class="prompt-wrap full-screen-wrap" style="position: relative;">
+                <div style="max-width:1000px; margin:0 auto;">
+                    <video controls muted loop playsinline style="width:100%; height:auto; display:block; margin:0 auto;">
+                      <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case8/pexels-dkeats-33004815-16fps.mp4" type="video/mp4">
+                    </video>
+                    <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px; text-align: center;">
+                    "Melt left bird; Explode right bird."
+                    </div>
+                    <!-- <img src="./assets/image/editing/1_re.webp" style="width:100%; height:auto; display:block; margin:0 auto;"> -->
+                  </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ethics-section">
+        <h3>Ethics Concerns</h3>
+        <p>
+            The images used in these demos are sourced from public domains or generated by models, and are intended solely to showcase the capabilities of this research. If you have any concerns, please contact us at haoaiming.ham@alibaba-inc.com, and we will promptly remove them.
+        </p>
+    </section>
+
+
+    <section class="acknowledgements-section">
+        <h3>Acknowledgements</h3>
+        <p>
+            Our work is primarily based on 
+            <a href="https://github.com/zai-org/CogVideo" target="_blank">CogVideoX</a>,
+            <a href="https://github.com/vfx-creator0/VFXCreator" target="_blank">VFXCreator</a>,
+            <a href="https://github.com/Xiaojiu-z/EasyControl" target="_blank">EasyControl</a>.
+            We are sincerely grateful for their excellent works.
+        </p>
+    </section>
+
+
+    <!-- <section class="bibtex-section">
+        <h3>BibTeX</h3>
+        <pre class="bibtex-code">@misc{lan2025fluxtext,
+            title={FLUX-Text: A Simple and Advanced Diffusion Transformer Baseline for Scene Text Editing},
+            author={Rui Lan and Yancheng Bai and Xu Duan and Mingxing Li and Lei Sun and Xiangxiang Chu},
+            year={2025},
+            eprint={2505.03329},
+            archivePrefix={arXiv},
+            primaryClass={cs.CV}
+        }</pre>
+    </section> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Clone the items to show neighbors in the carousel
+            $('.carousel-item', '.show-neighbors').each(function () {
+                var next = $(this).next();
+                if (!next.length) {
+                    next = $(this).siblings(':first');
+                }
+                next.children(':first-child').clone().appendTo($(this));
+            }).each(function () {
+                var prev = $(this).prev();
+                if (!prev.length) {
+                    prev = $(this).siblings(':last');
+                }
+                prev.children(':nth-last-child(2)').clone().prependTo($(this));
+            });
+
+            function playActiveVideo() {
+                // Stop all videos
+                $('.carousel-video').each(function () {
+                    this.pause();
+                });
+                
+                // Find the active carousel item (the middle one) and play its video
+                var activeVideo = $('#carouselExampleCaptions .carousel-item.active .video-wrapper video.carousel-video').get(0);
+
+                // Play the video only if it exists
+                if (activeVideo) {
+                    activeVideo.play();
+                }
+            }
+
+            // On slide event, pause all videos
+            $('#carouselExampleCaptions').on('slide.bs.carousel', function () {
+                $('.carousel-video').each(function () {
+                    this.pause();
+                });
+            });
+
+            // On slid event, play the active video
+            $('#carouselExampleCaptions').on('slid.bs.carousel', function () {
+                playActiveVideo();
+            });
+
+            // Play the active video on page load
+            playActiveVideo();
+        });
+    </script>
+
+</body>
+</html>
