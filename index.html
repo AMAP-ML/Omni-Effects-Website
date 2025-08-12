@@ -578,20 +578,20 @@
                 </div>
                 <h2 class="title-art2">Unified and Spatially-Controllable Visual Effects Generation</h2>
                 <div class="authors">
-                    <span class="author-block">Fangyuan Mao<sup>*</sup></span>
-                    <span class="author-block">Aiming Hao<sup>*</sup></span>
+                    <span class="author-block">Fangyuan Mao<sup>* &dagger;</sup></span>
+                    <span class="author-block">Aiming Hao<sup>&dagger;</sup></span>
                     <span class="author-block">Jintao Chen<sup></sup></span>
                     <span class="author-block">Dongxia Liu<sup></sup></span>
                     <span class="author-block">Xiaokun Feng<sup></sup></span>
                     <span class="author-block">Jiashu Zhu<sup></sup></span>
                     <span class="author-block">Meiqi Wu<sup></sup></span>
                     <span class="author-block">Chubin Chen<sup></sup></span>
-                    <span class="author-block">Jiahong Wu<sup>^ &dagger;</sup></span>
-                    <span class="author-block">Xiangxiang Chu<sup>&dagger;</sup></span>
+                    <span class="author-block">Jiahong Wu<sup>&ddagger;</sup></span>
+                    <span class="author-block">Xiangxiang Chu<sup></sup></span>
                 </div>
                 <!-- Added the affiliations section -->
                 <div class="author-affiliation">
-                    <p><span><sup>*</sup>Equal contribution,<sup>^</sup>Corresponding author,<sup> &dagger;</sup>Project lead</span></p>
+                    <p><span><sup>*</sup>Work done during the internship at AMAP, Alibaba Group,<sup>&dagger;</sup>Equal contribution,<sup> &ddagger;</sup>Project lead</span></p>
                     <p><span>Machine Learning Team, AMAP</span></p>
                 </div>
 
@@ -632,83 +632,90 @@
 
 
 
+
+
     <div class="container text-center" style="margin-top: 50px; text-align: center;">
-      <p class="title-art3" style="font-size: 1.6em;"> VFX Created from Omni-Effects</p>
-      <!-- <p class="description" style="font-size: 1.0em;"> Turn on the sound for a better viewing experience</p> -->
-    </div>
-    
+        <p class="title-art3" style="font-size: 1.6em;"> VFX Created from Omni-Effects</p>
+        </div>
 
-    <div id="carouselExampleCaptions" class="carousel slide show-neighbors" data-ride="carousel" data-interval="false">
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <div class="item__third">
-            <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
-                  <source src="assets/demo/videos/multi_VFX_cases/prompt-guided/gaode_Fluffify_winter.mp4" type="video/mp4">
+        <div id="carouselExampleCaptions" class="carousel slide show-neighbors" data-ride="carousel" data-interval="false">
+        <div class="carousel-inner">
+
+            <!-- 视频 1 -->
+            <div class="carousel-item active">
+            <div class="item__third">
+                <!-- 关键修改：添加 autoplay，移除 controls -->
+                <video autoplay muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                <source src="assets/demo/videos/multi_VFX_cases/prompt-guided/gaode_Fluffify_winter.mp4" type="video/mp4">
                 </video>              
-              <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
-                    "Fluffify it, Change the setting to a winter scene."
-              </div>
-          </div>
-        </div>
-
-        <div class="carousel-item">
-            <div class="item__third">
-              <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
-                <source src="assets/demo/videos/single_VFX_cases/paris/pexels-adrienn-638530-1460145_winter.mp4" type="video/mp4">
-              </video>              
-            <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
-                "Change the setting to a winter scene."
-            </div>
-            </div>
-        </div>
-
-        <div class="carousel-item">
-            <div class="item__third">
-              <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
-                <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case1/Melt_it_Explode_it_Levitate_it_pexels-mikhail-nilov-7828316_16fps.mp4" type="video/mp4">
-              </video>              
-            <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
-                "Melt ball; Explode vase; Levitate pyramid."
-            </div>
-            </div>
-        </div>
-        
-        <div class="carousel-item">
-            <div class="item__third">
-              <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
-                  <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case3/Levitate_it_Melt_it_anime.mp4" type="video/mp4">
-                </video>              
-              <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
-                    "Levitate girl; Melt toy bear; Turn it into anime style."
-              </div>
-            </div>
-        </div>
-
-        <div class="carousel-item">
-            <div class="item__third">
-                <video controls muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
-                    <source src="assets/demo/videos/multi_VFX_cases/prompt-guided/pexels-stockphotoartist-1034859_spring_flying.mp4" type="video/mp4">
-                  </video>              
-                <div id="text-prompt-set-1" class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
-                    "Change the setting to spring with blooming flowers; Make it fly"
+                <!-- 关键修改：id 改为 class -->
+                <div class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
+                "Fluffify it, Change the setting to a winter scene."
                 </div>
-              </div>           
+            </div>
+            </div>
+
+            <!-- 视频 2 -->
+            <div class="carousel-item">
+            <div class="item__third">
+                <video autoplay muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                <source src="assets/demo/videos/single_VFX_cases/paris/pexels-adrienn-638530-1460145_winter.mp4" type="video/mp4">
+                </video>              
+                <div class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
+                "Change the setting to a winter scene."
+                </div>
+            </div>
+            </div>
+
+            <!-- 视频 3 -->
+            <div class="carousel-item">
+            <div class="item__third">
+                <video autoplay muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case1/Melt_it_Explode_it_Levitate_it_pexels-mikhail-nilov-7828316_16fps.mp4" type="video/mp4">
+                </video>              
+                <div class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
+                "Melt ball; Explode vase; Levitate pyramid."
+                </div>
+            </div>
+            </div>
+            
+            <!-- 视频 4 -->
+            <div class="carousel-item">
+            <div class="item__third">
+                <video autoplay muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                <source src="assets/demo/videos/multi_VFX_cases/controllable_multi_VFX_cases/case3/Levitate_it_Melt_it_anime.mp4" type="video/mp4">
+                </video>              
+                <div class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
+                "Levitate girl; Melt toy bear; Turn it into anime style."
+                </div>
+            </div>
+            </div>
+
+            <!-- 视频 5 -->
+            <div class="carousel-item">
+            <div class="item__third">
+                <video autoplay muted loop playsinline style="max-width: 70%; height: auto; display: block; margin: 0 auto;">
+                <source src="assets/demo/videos/multi_VFX_cases/prompt-guided/pexels-stockphotoartist-1034859_spring_flying.mp4" type="video/mp4">
+                </video>              
+                <div class="responsive-text-prompt" style="font-family: Chalkduster; font-size: 14px; color: white; margin-top:10px; margin-bottom:10px;">
+                "Change the setting to spring with blooming flowers; Make it fly"
+                </div>
+            </div>           
+            </div>
+            
         </div>
-        
-        
-        
-      </div>
 
-      <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true" style="background-image: url('./assets/arrow-right.svg'); width: 50px; height: 50px; transform: rotate(180deg);"></span>
-        <span class="sr-only">Previous</span>
-      </a>
-      <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true" style="background-image: url('./assets/arrow-right.svg'); width: 50px; height: 50px;"></span>
-        <span class="sr-only">Next</span>
-      </a>
+        <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true" style="background-image: url('./assets/arrow-right.svg'); width: 50px; height: 50px; transform: rotate(180deg);"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true" style="background-image: url('./assets/arrow-right.svg'); width: 50px; height: 50px;"></span>
+            <span class="sr-only">Next</span>
+        </a>
 
-    </div>
+        </div>
+
 
 
     <section id="video">
